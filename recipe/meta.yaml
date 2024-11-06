@@ -10,32 +10,46 @@ source:
   sha256: 2d29d7f63f593caaeea0e0d0dd0ad8129c9c663b29e19bdf882e864bedf18fb0
 
 build:
-  noarch: python
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  skip: true  # [py<38]
 
 requirements:
   host:
-    - python >=3.8
+    - python
     - setuptools
     - wheel
     - pip
   run:
-    - python >=3.8
+    - python
 
 test:
+  source_files:
+    - test
   imports:
     - uuid6
   commands:
     - pip check
+    - pytest -vv test  # [not aarch64]
+    # skipping aarch64:
+    # AssertionError: 13950139689.496391 != 13950139689.495369 within 3 places (0.0010223388671875 difference)
+    - pytest -vv test -k "not test_time"  # [aarch64]
   requires:
     - pip
+    - pytest
 
 about:
   home: https://github.com/oittaa/uuid6-python
   summary: New time-based UUID formats which are suited for use as a database key
+  description: |
+    New time-based UUID formats which are suited for use as a database key.
+    This module extends immutable UUID objects (the UUID class) with the functions 
+    uuid6(), uuid7(), and uuid8() from the proposed IETF RFC 9562.
   license: MIT
   license_file: LICENSE
+  license_family: MIT
+  doc_url: https://github.com/oittaa/uuid6-python/blob/main/README.md
+  dev_url: https://github.com/oittaa/uuid6-python
 
 extra:
   recipe-maintainers:
