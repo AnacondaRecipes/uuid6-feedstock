@@ -6,19 +6,21 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/uuid6-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/uuid6-{{ version }}.tar.gz
   sha256: 2d29d7f63f593caaeea0e0d0dd0ad8129c9c663b29e19bdf882e864bedf18fb0
 
 build:
+  script_env:
+    # this is what determines the version in setup.py
+    - GITHUB_REF=refs/tags/{{ version }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  number: 1
   skip: true  # [py<38]
 
 requirements:
   host:
     - python
     - setuptools
-    - wheel
     - pip
   run:
     - python
@@ -54,3 +56,4 @@ about:
 extra:
   recipe-maintainers:
     - deepsihag
+    - xylar
