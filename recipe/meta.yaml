@@ -14,13 +14,14 @@ build:
     # this is what determines the version in setup.py
     - GITHUB_REF=refs/tags/{{ version }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 1
-  skip: true  # [py<38]
+  number: 0
+  skip: true  # [py<39]
 
 requirements:
   host:
     - python
     - setuptools
+    - wheel
     - pip
   run:
     - python
@@ -30,12 +31,17 @@ test:
     - test
   imports:
     - uuid6
+  requires:
+    - importlib
+    - pip
   commands:
     - pip check
-    - pytest -vv test  # [not aarch64]
-    # skipping aarch64:
+    # make sure the version reported by pip is correct
+    - python -c 'import importlib.metadata; assert importlib.metadata.version("{{ name }}") == "{{ version }}"'
+    - pytest -vv test  # [not (aarch64 or win)]
+    # skipping aarch64 and windows:
     # AssertionError: 13950139689.496391 != 13950139689.495369 within 3 places (0.0010223388671875 difference)
-    - pytest -vv test -k "not test_time"  # [aarch64]
+    - pytest -vv test -k "not test_time"  # [aarch64 or win]
   requires:
     - pip
     - pytest
