@@ -37,7 +37,7 @@ test:
   commands:
     - pip check
     # make sure the version reported by pip is correct
-    - python -c 'import importlib.metadata; assert importlib.metadata.version("{{ name }}") == "{{ version }}"'
+    - python -c "import importlib.metadata; assert importlib.metadata.version('{{ name }}') == '{{ version }}'"
     - pytest -vv test  # [not (aarch64 or win)]
     # skipping aarch64 and windows:
     # AssertionError: 13950139689.496391 != 13950139689.495369 within 3 places (0.0010223388671875 difference)
