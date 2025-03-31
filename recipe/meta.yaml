@@ -6,13 +6,16 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/uuid6-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/uuid6-{{ version }}.tar.gz
   sha256: 2d29d7f63f593caaeea0e0d0dd0ad8129c9c663b29e19bdf882e864bedf18fb0
 
 build:
+  script_env:
+    # this is what determines the version in setup.py
+    - GITHUB_REF=refs/tags/{{ version }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  skip: true  # [py<38]
+  skip: true  # [py<39]
 
 requirements:
   host:
@@ -28,15 +31,17 @@ test:
     - test
   imports:
     - uuid6
+  requires:
+    - pytest
+    - pip
   commands:
     - pip check
-    - pytest -vv test  # [not aarch64]
-    # skipping aarch64:
+    # make sure the version reported by pip is correct
+    - python -c "import importlib.metadata; assert importlib.metadata.version('{{ name }}') == '{{ version }}'"
+    - pytest -vv test  # [not (aarch64 or win)]
+    # skipping aarch64 and windows:
     # AssertionError: 13950139689.496391 != 13950139689.495369 within 3 places (0.0010223388671875 difference)
-    - pytest -vv test -k "not test_time"  # [aarch64]
-  requires:
-    - pip
-    - pytest
+    - pytest -vv test -k "not test_time"  # [aarch64 or win]
 
 about:
   home: https://github.com/oittaa/uuid6-python
@@ -54,3 +59,4 @@ about:
 extra:
   recipe-maintainers:
     - deepsihag
+    - xylar
