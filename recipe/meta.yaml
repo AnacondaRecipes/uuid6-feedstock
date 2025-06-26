@@ -27,7 +27,7 @@ requirements:
 
 {% set tests_to_skip = "" %}
 # AssertionError: 13970222226.416412 != 13970222226.413956 within 3 places (0.0024566650390625 difference)
-{% set tests_to_skip = '-k "not test_time"'' %}  # [aarch64]
+{% set tests_to_skip = '-k "not test_time"' %}  # [aarch64]
 
 test:
   source_files:
