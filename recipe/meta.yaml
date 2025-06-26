@@ -1,18 +1,15 @@
 {% set name = "uuid6" %}
-{% set version = "2024.7.10" %}
+{% set version = "2025.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/uuid6-{{ version }}.tar.gz
-  sha256: 2d29d7f63f593caaeea0e0d0dd0ad8129c9c663b29e19bdf882e864bedf18fb0
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: bb78aa300e29db89b00410371d0c1f1824e59e29995a9daa3dedc8033d1d84ec
 
 build:
-  script_env:
-    # this is what determines the version in setup.py
-    - GITHUB_REF=refs/tags/{{ version }}
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   skip: true  # [py<39]
@@ -20,9 +17,11 @@ build:
 requirements:
   host:
     - python
-    - setuptools
-    - wheel
     - pip
+    - setuptools >=45
+    - wheel
+    - setuptools_scm >=6.2
+    - toml
   run:
     - python
 
@@ -36,12 +35,7 @@ test:
     - pip
   commands:
     - pip check
-    # make sure the version reported by pip is correct
-    - python -c "import importlib.metadata; assert importlib.metadata.version('{{ name }}') == '{{ version }}'"
-    - pytest -vv test  # [not (aarch64 or win)]
-    # skipping aarch64 and windows:
-    # AssertionError: 13950139689.496391 != 13950139689.495369 within 3 places (0.0010223388671875 difference)
-    - pytest -vv test -k "not test_time"  # [aarch64 or win]
+    - pytest -v test
 
 about:
   home: https://github.com/oittaa/uuid6-python
