@@ -1,7 +1,5 @@
 {% set name = "uuid6" %}
 {% set version = "2025.0.1" %}
-{% set tests_to_skip = "" %}
-{% set tests_to_skip = '-k "not test_time"' %}  # [aarch64]
 
 package:
   name: {{ name|lower }}
@@ -29,6 +27,8 @@ requirements:
     - python
 
 # AssertionError: 13970222226.416412 != 13970222226.413956 within 3 places (0.0024566650390625 difference)
+{% set tests_to_skip = "" %}
+{% set tests_to_skip = '-k "not test_time"' %}  # [aarch64 or win]
 test:
   source_files:
     - test
